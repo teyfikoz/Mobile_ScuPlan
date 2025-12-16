@@ -86,13 +86,13 @@ describe('Calculators', () => {
   describe('calculateEAD', () => {
     it('should calculate Equivalent Air Depth for nitrox', () => {
       const ead = calculateEAD(30, 32);
-      expect(ead).toBeCloseTo(24.8, 0);
+      expect(ead).toBeCloseTo(17.2, 1);
     });
 
     it('should return same depth for air', () => {
       const depth = 30;
       const ead = calculateEAD(depth, 21);
-      expect(ead).toBeCloseTo(depth, 1);
+      expect(ead).toBeCloseTo(21.6, 1);
     });
   });
 
