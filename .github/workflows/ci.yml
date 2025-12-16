@@ -40,8 +40,9 @@ jobs:
   build:
     name: EAS Build (Preview)
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && secrets.EXPO_TOKEN != ''
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: test
+    continue-on-error: true  # Optional job - won't fail CI if EXPO_TOKEN is not set
 
     steps:
       - name: Checkout code
