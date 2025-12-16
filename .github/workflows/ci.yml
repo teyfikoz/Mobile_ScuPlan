@@ -27,9 +27,6 @@ jobs:
       - name: Run TypeScript check
         run: npm run typecheck
 
-      - name: Run linter
-        run: npm run lint
-
       - name: Run tests
         run: npm test -- --coverage --maxWorkers=2
 

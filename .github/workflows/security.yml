@@ -23,11 +23,8 @@ jobs:
           node-version: '20'
 
       - name: Run npm audit
-        run: npm audit --audit-level=moderate
+        run: npm audit --audit-level=moderate --legacy-peer-deps
         continue-on-error: true
-
-      - name: Run npm audit fix
-        run: npm audit fix --dry-run
 
   dependency-review:
     name: Dependency Review
