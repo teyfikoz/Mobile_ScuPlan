@@ -30,6 +30,25 @@ yarn-error.*
 # local env files
 .env*.local
 .env
+.env.development
+.env.production
 
 # typescript
 *.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build
+*.apk
+*.aab
+*.ipa
+build/
