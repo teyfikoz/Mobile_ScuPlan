@@ -136,3 +136,86 @@ export type ContactRequest = {
   createdAt: number;
   expiresAt: number;
 };
+
+// User Profile (Authenticated Users)
+export type UserProfile = {
+  id: string;
+  email: string;
+  fullName?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  phone?: string;
+  certificationOrg?: CertificationOrganization;
+  certificationLevel?: CertificationLevel;
+  experienceDives: number;
+  specialties: DivingSpecialty[];
+  country?: string;
+  city?: string;
+  region?: string;
+  profileVisible: boolean;
+  locationSharingEnabled: boolean;
+  showRealName: boolean;
+  gdprConsentGiven: boolean;
+  gdprConsentDate?: number;
+  kvkkConsentGiven: boolean;
+  kvkkConsentDate?: number;
+  termsAccepted: boolean;
+  termsAcceptedDate?: number;
+  marketingConsent: boolean;
+  totalDives: number;
+  totalDiveTimeMinutes: number;
+  maxDepthMeters: number;
+  lastDiveDate?: number;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  emergencyContactRelation?: string;
+  createdAt: number;
+  updatedAt: number;
+  lastLoginAt?: number;
+};
+
+// Dive Log Entry
+export type DiveHistoryEntry = {
+  id: string;
+  userId: string;
+  sessionId?: string;
+  diveNumber: number;
+  diveDate: number;
+  diveSiteName?: string;
+  diveSiteCountry?: string;
+  diveSiteCity?: string;
+  maxDepthMeters: number;
+  durationMinutes: number;
+  waterTemperatureCelsius?: number;
+  visibilityMeters?: number;
+  gasMix?: string;
+  tankVolumeLiters?: number;
+  startingPressureBar?: number;
+  endingPressureBar?: number;
+  weatherConditions?: string;
+  seaState?: string;
+  currentStrength?: string;
+  buddyNames?: string[];
+  instructorName?: string;
+  notes?: string;
+  highlights?: string[];
+  wildlifeSpotted?: string[];
+  photoUrls?: string[];
+  difficultyRating?: number;
+  enjoymentRating?: number;
+  createdAt: number;
+  updatedAt: number;
+};
+
+// User Consent for GDPR/KVKK
+export type UserConsent = {
+  id: string;
+  userId: string;
+  consentType: 'GDPR' | 'KVKK' | 'TERMS' | 'MARKETING';
+  consentVersion: string;
+  consentText: string;
+  granted: boolean;
+  grantedAt: number;
+  ipAddress?: string;
+  userAgent?: string;
+};
