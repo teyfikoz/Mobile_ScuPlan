@@ -5,6 +5,7 @@ export const colors = {
   accent: '#FF6F00',
   background: '#FFFFFF',
   surface: '#F5F5F5',
+  white: '#FFFFFF',
   error: '#D32F2F',
   warning: '#FFA726',
   success: '#66BB6A',
@@ -61,6 +62,11 @@ export const typography = {
     fontSize: 12,
     fontWeight: '400' as const,
     lineHeight: 18,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500' as const,
+    lineHeight: 20,
   },
   button: {
     fontSize: 16,

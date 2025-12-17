@@ -51,34 +51,80 @@ export type DiveSession = {
   notes?: string;
 };
 
-export type CertificationLevel =
-  | 'CMAS_1_STAR'
-  | 'CMAS_2_STAR'
-  | 'CMAS_3_STAR'
-  | 'PADI_OPEN_WATER'
-  | 'PADI_ADVANCED'
-  | 'PADI_RESCUE'
-  | 'PADI_DIVEMASTER'
-  | 'SSI_OPEN_WATER'
-  | 'SSI_ADVANCED'
-  | 'TDI_INTRO_TECH'
-  | 'TDI_ADVANCED_NITROX'
+// Certification Organizations
+export type CertificationOrganization =
+  | 'PADI'
+  | 'CMAS'
+  | 'SSI'
+  | 'NAUI'
+  | 'TDI'
+  | 'SDI'
+  | 'IANTD'
+  | 'GUE'
+  | 'BSAC'
   | 'OTHER';
+
+// Certification Levels
+export type CertificationLevel =
+  | 'OPEN_WATER'
+  | 'ADVANCED'
+  | 'RESCUE'
+  | 'DIVEMASTER'
+  | 'INSTRUCTOR'
+  | 'MASTER_INSTRUCTOR'
+  | 'TECHNICAL'
+  | 'CAVE'
+  | 'TRIMIX'
+  | 'CCR'
+  | 'OTHER';
+
+// Diving Specialties
+export type DivingSpecialty =
+  | 'RECREATIONAL'
+  | 'TECHNICAL'
+  | 'CAVE'
+  | 'WRECK'
+  | 'DEEP'
+  | 'NIGHT'
+  | 'UNDERWATER_PHOTOGRAPHY'
+  | 'UNDERWATER_VIDEOGRAPHY'
+  | 'SEARCH_AND_RECOVERY'
+  | 'NITROX'
+  | 'TRIMIX'
+  | 'CCR_REBREATHER'
+  | 'SIDEMOUNT'
+  | 'DPV'
+  | 'ICE'
+  | 'ALTITUDE'
+  | 'DRIFT'
+  | 'BOAT'
+  | 'SHORE';
+
+// User Role
+export type UserRole = 'DIVER' | 'INSTRUCTOR';
 
 export type BuddyProfile = {
   id: string;
   deviceId: string;
   sessionToken: string;
   displayName: string;
-  certification: CertificationLevel;
+  role: UserRole;
+  certificationOrg: CertificationOrganization;
+  certificationLevel: CertificationLevel;
   experienceDives: number;
+  specialties: DivingSpecialty[];
   languages: string[];
   location: {
+    country: string;
+    city: string;
+    region?: string;
     gridLat: number;
     gridLon: number;
   };
   availableUntil: number;
   createdAt: number;
+  bio?: string;
+  isInstructor: boolean;
 };
 
 export type ContactRequest = {

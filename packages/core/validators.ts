@@ -75,4 +75,25 @@ export function validateBuddyProfile(profile: BuddyProfile): void {
   if (profile.availableUntil <= Date.now()) {
     throw new ValidationError('Availability must be in the future');
   }
+  if (!profile.location.country || profile.location.country.length < 2) {
+    throw new ValidationError('Valid country code is required');
+  }
+  if (!profile.location.city || profile.location.city.trim().length === 0) {
+    throw new ValidationError('City is required');
+  }
+  if (profile.location.city.length > 100) {
+    throw new ValidationError('City name too long');
+  }
+  if (profile.bio && profile.bio.length > 500) {
+    throw new ValidationError('Bio too long (max 500 characters)');
+  }
+  if (!profile.role) {
+    throw new ValidationError('Role is required');
+  }
+  if (!profile.certificationOrg) {
+    throw new ValidationError('Certification organization is required');
+  }
+  if (!profile.certificationLevel) {
+    throw new ValidationError('Certification level is required');
+  }
 }

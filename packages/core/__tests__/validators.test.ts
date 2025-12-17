@@ -168,15 +168,23 @@ describe('Validators', () => {
       deviceId: 'hashed-device-id',
       sessionToken: 'token',
       displayName: 'John Doe',
-      certification: 'PADI_ADVANCED',
+      role: 'DIVER',
+      certificationOrg: 'PADI',
+      certificationLevel: 'ADVANCED',
       experienceDives: 50,
+      specialties: ['RECREATIONAL', 'WRECK'],
       languages: ['en', 'tr'],
       location: {
+        country: 'TR',
+        city: 'Istanbul',
+        region: 'Marmara',
         gridLat: 37.77,
         gridLon: -122.42,
       },
       availableUntil: Date.now() + 86400000, // +24 hours
       createdAt: Date.now(),
+      bio: 'Experienced diver looking for buddies',
+      isInstructor: false,
     };
 
     it('should accept valid buddy profile', () => {
