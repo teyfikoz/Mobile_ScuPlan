@@ -66,6 +66,14 @@
         }
       ],
       [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#0077BE",
+          "sounds": ["./assets/sounds/notification.wav"]
+        }
+      ],
+      [
         "expo-camera",
         {
           "cameraPermission": "ScuPlan needs camera access to scan QR codes for buddy pairing."

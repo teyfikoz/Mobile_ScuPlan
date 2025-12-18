@@ -169,7 +169,7 @@ export default function SettingsScreen() {
 
         <TouchableOpacity
           style={styles.settingRow}
-          onPress={() => router.push('/(tabs)/profile')}
+          onPress={() => router.push('/profile-edit')}
         >
           <View style={styles.settingLeft}>
             <Edit size={20} color={colors.text.secondary} />

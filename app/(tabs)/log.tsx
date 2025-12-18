@@ -6,13 +6,15 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useEffect, useState } from 'react';
-import { Clock, MapPin, Navigation } from 'lucide-react-native';
+import { useRouter } from 'expo-router';
+import { Clock, MapPin, Navigation, Plus } from 'lucide-react-native';
 import { colors, spacing, typography, borderRadius, shadows } from '../../constants/theme';
 import { DiveSession } from '../../packages/core/types';
 import { getAllDiveSessions } from '../../services/diveSessions';
 import { formatDuration, formatDistance } from '../../packages/core/calculators';
 
 export default function LogScreen() {
+  const router = useRouter();
   const [sessions, setSessions] = useState<DiveSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -103,8 +105,16 @@ export default function LogScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Dive Log</Text>
-        <Text style={styles.subtitle}>{sessions.length} dives</Text>
+        <View>
+          <Text style={styles.title}>Dive Log</Text>
+          <Text style={styles.subtitle}>{sessions.length} dives</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => router.push('/dive-log-entry')}
+        >
+          <Plus size={24} color={colors.white} />
+        </TouchableOpacity>
       </View>
 
       {sessions.length === 0 ? (
@@ -140,10 +150,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: spacing.lg,
     paddingTop: spacing.xl,
     borderBottomWidth: 1,
     borderBottomColor: colors.divider,
+  },
+  addButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     ...typography.h2,
