@@ -95,7 +95,7 @@ export default function ChatScreen() {
     try {
       const profile = await getCurrentUserProfile();
       if (!profile) {
-        router.replace('/welcome');
+        setLoading(false);
         return;
       }
 

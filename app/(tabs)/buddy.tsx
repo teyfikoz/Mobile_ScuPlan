@@ -87,7 +87,6 @@ export default function BuddyScreen() {
       const currentUser = await getCurrentUserProfile();
       if (!currentUser) {
         Alert.alert('Error', 'Please sign in to send contact requests');
-        router.push('/welcome');
         return;
       }
 

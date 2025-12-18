@@ -66,8 +66,7 @@ export default function ProfileEditScreen() {
     try {
       const userProfile = await getCurrentUserProfile();
       if (!userProfile) {
-        Alert.alert('Error', 'Please sign in first');
-        router.replace('/welcome');
+        setLoading(false);
         return;
       }
 

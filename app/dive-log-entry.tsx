@@ -71,8 +71,6 @@ export default function DiveLogEntryScreen() {
     try {
       const profile = await getCurrentUserProfile();
       if (!profile) {
-        Alert.alert('Error', 'Please sign in first');
-        router.replace('/welcome');
         return;
       }
 

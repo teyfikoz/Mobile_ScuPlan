@@ -146,12 +146,7 @@ export default function SettingsScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Please sign in to access settings</Text>
-          <Button
-            title="Sign In"
-            onPress={() => router.replace('/welcome')}
-            variant="primary"
-          />
+          <Text style={styles.errorText}>Loading settings...</Text>
         </View>
       </View>
     );
