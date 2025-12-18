@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'expo-router';
 import { Users, Search, Filter, X, MapPin, Award, Globe } from 'lucide-react-native';
 import { colors, spacing, typography } from '../../constants/theme';
 import Button from '../../components/Button';
@@ -33,14 +34,18 @@ import {
   getSpecialtyLabel,
   getCountryFlag,
 } from '../../packages/core/buddyConstants';
+import { sendContactRequest, createDirectConversation } from '../../services/messaging';
+import { getCurrentUserProfile } from '../../services/auth';
 
 export default function BuddyScreen() {
+  const router = useRouter();
   const [myProfile, setMyProfile] = useState<BuddyProfile | null>(null);
   const [buddies, setBuddies] = useState<BuddyProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [searchMode, setSearchMode] = useState<'buddies' | 'instructors'>('buddies');
+  const [sendingRequestId, setSendingRequestId] = useState<string | null>(null);
   const { location, hasPermission, requestPermission, getCurrentLocation } = useLocation();
 
   // Search filters
@@ -73,6 +78,57 @@ export default function BuddyScreen() {
       setMyProfile(profile);
     } catch (error) {
       console.error('Failed to load profile:', error);
+    }
+  };
+
+  const handleSendContactRequest = async (buddyId: string, buddyName: string) => {
+    try {
+      // Get current user profile
+      const currentUser = await getCurrentUserProfile();
+      if (!currentUser) {
+        Alert.alert('Error', 'Please sign in to send contact requests');
+        router.push('/welcome');
+        return;
+      }
+
+      // Check if we need to convert buddy profile ID to user ID
+      // For now, we'll assume buddyId is the user_id or we need to look it up
+      // This is a simplified version - you might need to adjust based on your data model
+
+      setSendingRequestId(buddyId);
+
+      await sendContactRequest({
+        fromUserId: currentUser.id,
+        toUserId: buddyId,
+        message: `Hi! I'd like to connect with you on ScuPlan.`,
+        context: 'buddy_finder',
+        metadata: { source: searchMode },
+      });
+
+      Alert.alert(
+        'Request Sent',
+        `Contact request sent to ${buddyName}!`,
+        [
+          {
+            text: 'View Requests',
+            onPress: () => router.push('/contact-requests'),
+          },
+          {
+            text: 'OK',
+            style: 'cancel',
+          },
+        ]
+      );
+    } catch (error: any) {
+      console.error('Failed to send contact request:', error);
+
+      if (error.message?.includes('duplicate')) {
+        Alert.alert('Already Sent', 'You already sent a contact request to this user');
+      } else {
+        Alert.alert('Error', 'Failed to send contact request. Please try again.');
+      }
+    } finally {
+      setSendingRequestId(null);
     }
   };
 
@@ -407,10 +463,11 @@ export default function BuddyScreen() {
             )}
 
             <Button
-              title="Send Contact Request"
-              onPress={() => Alert.alert('Coming Soon', 'Contact request feature coming soon!')}
+              title={sendingRequestId === buddy.id ? 'Sending...' : 'Send Contact Request'}
+              onPress={() => handleSendContactRequest(buddy.id, buddy.displayName)}
               variant="secondary"
               size="small"
+              loading={sendingRequestId === buddy.id}
             />
           </View>
         ))}

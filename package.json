@@ -19,6 +19,7 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@supabase/supabase-js": "^2.58.0",
+    "date-fns": "^4.1.0",
     "expo": "^54.0.10",
     "expo-barcode-scanner": "^13.0.1",
     "expo-blur": "~15.0.7",
@@ -64,7 +65,12 @@
   },
   "jest": {
     "preset": "react-native",
-    "moduleFileExtensions": ["ts", "tsx", "js", "jsx"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
     },
@@ -72,7 +78,9 @@
       "**/__tests__/**/*.test.ts",
       "**/__tests__/**/*.test.tsx"
     ],
-    "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest-setup.ts"
+    ],
     "collectCoverageFrom": [
       "packages/**/*.{ts,tsx}",
       "services/**/*.{ts,tsx}",
