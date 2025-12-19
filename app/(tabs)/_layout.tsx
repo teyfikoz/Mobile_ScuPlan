@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Home, FolderOpen, Users, MessageCircle, BookOpen, Menu } from 'lucide-react-native';
 import { colors } from '../../constants/theme';
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -12,7 +13,16 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: colors.background,
           borderTopColor: colors.divider,
+          borderTopWidth: 1,
+          height: Platform.OS === 'ios' ? 85 : 65,
+          paddingBottom: Platform.OS === 'ios' ? 25 : 10,
+          paddingTop: 10,
         },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen
