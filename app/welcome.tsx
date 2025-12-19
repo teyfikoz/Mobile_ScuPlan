@@ -6,13 +6,15 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  TextInput,
 } from 'react-native';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Check, X, Shield, Users, Map, TrendingUp } from 'lucide-react-native';
+import { Check, X, Shield, Users, Map, TrendingUp, Mail } from 'lucide-react-native';
 import { colors, spacing, typography } from '../constants/theme';
 import Button from '../components/Button';
 import {
+  signInWithEmail,
   signInWithGoogle,
   signInWithApple,
   recordConsent,
@@ -108,6 +110,78 @@ export default function WelcomeScreen() {
   const [showGdprText, setShowGdprText] = useState(false);
   const [showKvkkText, setShowKvkkText] = useState(false);
   const [showTermsText, setShowTermsText] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleEmailSignIn = async () => {
+    // Check if all required consents are given
+    if (!gdprAccepted || !kvkkAccepted || !termsAccepted) {
+      Alert.alert(
+        'Consent Required',
+        'Please accept GDPR, KVKK, and Terms of Service to continue.'
+      );
+      return;
+    }
+
+    // Validate email and password
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Missing Information', 'Please enter both email and password.');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Invalid Password', 'Password must be at least 6 characters.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { user } = await signInWithEmail(email.trim(), password);
+
+      if (!user) {
+        throw new Error('Failed to create user profile');
+      }
+
+      // Record consents
+      await Promise.all([
+        recordConsent(user.id, {
+          type: 'GDPR',
+          version: CONSENT_VERSION,
+          text: GDPR_TEXT,
+          granted: true,
+        }),
+        recordConsent(user.id, {
+          type: 'KVKK',
+          version: CONSENT_VERSION,
+          text: KVKK_TEXT,
+          granted: true,
+        }),
+        recordConsent(user.id, {
+          type: 'TERMS',
+          version: CONSENT_VERSION,
+          text: TERMS_TEXT,
+          granted: true,
+        }),
+        recordConsent(user.id, {
+          type: 'MARKETING',
+          version: CONSENT_VERSION,
+          text: 'Marketing communications consent',
+          granted: marketingConsent,
+        }),
+      ]);
+
+      // Mark onboarding as complete
+      await completeOnboarding();
+
+      // Navigate to main app
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      Alert.alert('Sign In Failed', error.message || 'Please try again or contact support if the problem persists.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignIn = async (provider: 'google' | 'apple') => {
     // Check if all required consents are given
@@ -159,15 +233,11 @@ export default function WelcomeScreen() {
       // Mark onboarding as complete
       await completeOnboarding();
 
-      // Navigate to main app or profile setup
-      if (isNewUser) {
-        router.replace('/(tabs)/profile');
-      } else {
-        router.replace('/(tabs)');
-      }
-    } catch (error) {
+      // Navigate to main app
+      router.replace('/(tabs)');
+    } catch (error: any) {
       console.error('Sign in error:', error);
-      Alert.alert('Sign In Failed', 'Please try again or contact support if the problem persists.');
+      Alert.alert('Sign In Failed', error.message || 'Please try again or contact support if the problem persists.');
     } finally {
       setLoading(false);
     }
@@ -357,12 +427,58 @@ export default function WelcomeScreen() {
   );
 
   const renderSignInStep = () => (
-    <View style={styles.stepContainer}>
+    <ScrollView style={styles.stepContainer} contentContainerStyle={styles.scrollContent}>
       <Text style={styles.title}>Sign In</Text>
       <Text style={styles.subtitle}>
-        Choose your preferred sign-in method
+        Enter your email and password to continue
       </Text>
 
+      {/* Email & Password Sign In */}
+      <View style={styles.emailSignInContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor={colors.text.secondary}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+          editable={!loading}
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password (min 6 characters)"
+          placeholderTextColor={colors.text.secondary}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          autoCapitalize="none"
+          editable={!loading}
+        />
+
+        <Button
+          title={loading ? 'Signing in...' : 'Sign In / Sign Up'}
+          onPress={handleEmailSignIn}
+          variant="primary"
+          size="large"
+          disabled={loading}
+        />
+
+        <Text style={styles.helpText}>
+          First time? We'll create your account automatically!
+        </Text>
+      </View>
+
+      {/* Divider */}
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>OR</Text>
+        <View style={styles.dividerLine} />
+      </View>
+
+      {/* OAuth Options */}
       <View style={styles.signInButtonsContainer}>
         <TouchableOpacity
           style={[styles.signInButton, styles.googleButton]}
@@ -370,7 +486,7 @@ export default function WelcomeScreen() {
           disabled={loading}
         >
           <Text style={styles.signInButtonText}>
-            {loading ? 'Signing in...' : 'Continue with Google'}
+            Continue with Google
           </Text>
         </TouchableOpacity>
 
@@ -380,7 +496,7 @@ export default function WelcomeScreen() {
           disabled={loading}
         >
           <Text style={[styles.signInButtonText, styles.appleButtonText]}>
-            {loading ? 'Signing in...' : 'Continue with Apple'}
+            Continue with Apple
           </Text>
         </TouchableOpacity>
       </View>
@@ -395,7 +511,7 @@ export default function WelcomeScreen() {
       <TouchableOpacity onPress={() => setCurrentStep(1)} style={styles.backButton}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 
   return (
@@ -565,5 +681,41 @@ const styles = StyleSheet.create({
   backButtonText: {
     ...typography.body,
     color: colors.primary,
+  },
+  emailSignInContainer: {
+    marginTop: spacing.lg,
+    gap: spacing.md,
+  },
+  input: {
+    ...typography.body,
+    color: colors.text.primary,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.divider,
+    padding: spacing.md,
+    paddingHorizontal: spacing.lg,
+  },
+  helpText: {
+    ...typography.caption,
+    color: colors.text.secondary,
+    textAlign: 'center',
+    marginTop: -spacing.xs,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.xl,
+    gap: spacing.md,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.divider,
+  },
+  dividerText: {
+    ...typography.caption,
+    color: colors.text.secondary,
+    fontWeight: '600',
   },
 });

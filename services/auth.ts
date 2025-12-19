@@ -13,6 +13,51 @@ export interface SignInResult {
   isNewUser: boolean;
 }
 
+// Sign in with Email (Development/Testing)
+export async function signInWithEmail(email: string, password: string): Promise<SignInResult> {
+  // Try to sign in first
+  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  let session = signInData?.session;
+
+  // If sign in fails, try to sign up
+  if (signInError) {
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (signUpError) {
+      throw new Error(`Authentication failed: ${signUpError.message}`);
+    }
+
+    session = signUpData.session;
+  }
+
+  if (!session) {
+    throw new Error('No session established after authentication');
+  }
+
+  // Check if user profile exists
+  const profile = await getUserProfile(session.user.id);
+  const isNewUser = !profile;
+
+  // Create basic profile if new user
+  if (isNewUser) {
+    const newProfile = await createUserProfile({
+      id: session.user.id,
+      email: session.user.email!,
+      fullName: email.split('@')[0], // Use email prefix as default name
+    });
+    return { user: newProfile, session, isNewUser: true };
+  }
+
+  return { user: profile, session, isNewUser: false };
+}
+
 // Sign in with Google
 export async function signInWithGoogle(): Promise<SignInResult> {
   const { data, error } = await supabase.auth.signInWithOAuth({
