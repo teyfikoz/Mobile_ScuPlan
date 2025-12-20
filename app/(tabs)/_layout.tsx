@@ -21,38 +21,11 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.text.secondary,
         tabBarStyle: {
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
           backgroundColor: colors.surface,
           borderTopColor: colors.divider,
           borderTopWidth: 1,
-          height: tabBarHeight,
-          paddingBottom: Platform.select({
-            ios: insets.bottom,
-            android: 8,
-            default: 8,
-          }),
-          paddingTop: 8,
-          paddingHorizontal: 0,
+          height: 60,
         },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-          marginBottom: Platform.select({
-            ios: 0,
-            android: 4,
-            default: 4,
-          }),
-        },
-        tabBarIconStyle: {
-          marginTop: 4,
-        },
-        tabBarItemStyle: {
-          paddingVertical: 4,
-        },
-        tabBarHideOnKeyboard: Platform.OS === 'android',
       }}
     >
       <Tabs.Screen
