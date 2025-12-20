@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator, Share, Alert } from 'react-native';
 import { colors } from '../../../constants/theme';
-import { useRouter } from 'expo-router';
-import { Plus, MapPin, Clock, Gauge } from 'lucide-react-native';
-import { useState, useEffect } from 'react';
-import { getAllDivePlans } from '../../../services/divePlans';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { Plus, MapPin, Clock, Gauge, Share2 } from 'lucide-react-native';
+import { useState, useCallback } from 'react';
+import { getAllDivePlans, exportPlanToJSON, createDeepLink } from '../../../services/divePlans';
 import { DivePlan } from '../../../packages/core/types';
 import { format } from 'date-fns';
 
@@ -12,9 +12,11 @@ export default function PlansScreen() {
   const [plans, setPlans] = useState<DivePlan[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadPlans();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadPlans();
+    }, [])
+  );
 
   const loadPlans = async () => {
     try {
@@ -24,6 +26,28 @@ export default function PlansScreen() {
       console.error('Failed to load plans:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const sharePlan = async (plan: DivePlan) => {
+    try {
+      const deepLink = createDeepLink(plan);
+      const planJSON = exportPlanToJSON(plan);
+
+      const message = `Check out my dive plan: ${plan.name}\n\n` +
+        `Max Depth: ${plan.maxDepth}m\n` +
+        `Runtime: ${plan.plannedRuntimeMin} min\n` +
+        `Location: ${plan.location?.name || 'Not specified'}\n\n` +
+        `Link: ${deepLink}\n\n` +
+        `JSON:\n${planJSON}`;
+
+      await Share.share({
+        message,
+        title: `Dive Plan: ${plan.name}`,
+      });
+    } catch (error) {
+      console.error('Failed to share plan:', error);
+      Alert.alert('Error', 'Failed to share plan');
     }
   };
 
@@ -74,39 +98,54 @@ export default function PlansScreen() {
         ) : (
           <View style={styles.plansList}>
             {plans.map((plan) => (
-              <Pressable
-                key={plan.id}
-                style={({ pressed }) => [
-                  styles.planCard,
-                  pressed && styles.planCardPressed
-                ]}
-                onPress={() => {}}
-              >
-                <Text style={styles.planName}>{plan.name}</Text>
-                {plan.location?.name && (
-                  <View style={styles.planDetail}>
-                    <MapPin size={16} color={colors.text.secondary} />
-                    <Text style={styles.planDetailText}>{plan.location.name}</Text>
+              <View key={plan.id} style={styles.planCard}>
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.planCardContent,
+                    pressed && styles.planCardPressed
+                  ]}
+                  onPress={() => {}}
+                >
+                  <View style={styles.planHeader}>
+                    <Text style={styles.planName}>{plan.name}</Text>
+                    <Pressable
+                      style={({ pressed }) => [
+                        styles.shareButton,
+                        pressed && styles.shareButtonPressed
+                      ]}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        sharePlan(plan);
+                      }}
+                    >
+                      <Share2 size={20} color={colors.primary} />
+                    </Pressable>
                   </View>
-                )}
-                <View style={styles.planStats}>
-                  <View style={styles.planDetail}>
-                    <Gauge size={16} color={colors.text.secondary} />
-                    <Text style={styles.planDetailText}>
-                      {plan.maxDepth}m max depth
-                    </Text>
+                  {plan.location?.name && (
+                    <View style={styles.planDetail}>
+                      <MapPin size={16} color={colors.text.secondary} />
+                      <Text style={styles.planDetailText}>{plan.location.name}</Text>
+                    </View>
+                  )}
+                  <View style={styles.planStats}>
+                    <View style={styles.planDetail}>
+                      <Gauge size={16} color={colors.text.secondary} />
+                      <Text style={styles.planDetailText}>
+                        {plan.maxDepth}m max depth
+                      </Text>
+                    </View>
+                    <View style={styles.planDetail}>
+                      <Clock size={16} color={colors.text.secondary} />
+                      <Text style={styles.planDetailText}>
+                        {plan.plannedRuntimeMin} min
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.planDetail}>
-                    <Clock size={16} color={colors.text.secondary} />
-                    <Text style={styles.planDetailText}>
-                      {plan.plannedRuntimeMin} min
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.planDate}>
-                  Created {format(new Date(plan.createdAt), 'MMM d, yyyy')}
-                </Text>
-              </Pressable>
+                  <Text style={styles.planDate}>
+                    Created {format(new Date(plan.createdAt), 'MMM d, yyyy')}
+                  </Text>
+                </Pressable>
+              </View>
             ))}
           </View>
         )}
@@ -203,18 +242,34 @@ const styles = StyleSheet.create({
   planCard: {
     backgroundColor: colors.surface,
     borderRadius: 12,
-    padding: 16,
     borderWidth: 1,
     borderColor: colors.divider,
+    marginBottom: 12,
+  },
+  planCardContent: {
+    padding: 16,
   },
   planCardPressed: {
     opacity: 0.7,
   },
+  planHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
   planName: {
+    flex: 1,
     fontSize: 18,
     fontWeight: '600',
     color: colors.text.primary,
-    marginBottom: 8,
+    marginRight: 12,
+  },
+  shareButton: {
+    padding: 4,
+  },
+  shareButtonPressed: {
+    opacity: 0.5,
   },
   planDetail: {
     flexDirection: 'row',

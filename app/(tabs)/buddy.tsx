@@ -1,15 +1,17 @@
-import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator, TextInput, Dimensions } from 'react-native';
 import { colors } from '../../constants/theme';
-import { Users, GraduationCap, MapPin, Award, Search } from 'lucide-react-native';
+import { Users, GraduationCap, MapPin, Award, Search, Map } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import { getNearbyBuddies } from '../../services/nearbyBuddies';
 import { BuddyProfile } from '../../packages/core/types';
+import MapView, { Marker } from '../../components/MapView';
 
 export default function BuddyScreen() {
   const [buddies, setBuddies] = useState<BuddyProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterInstructors, setFilterInstructors] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     loadBuddies();
@@ -47,8 +49,19 @@ export default function BuddyScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Buddy Finder</Text>
-        <Text style={styles.subtitle}>{filteredBuddies.length} nearby</Text>
+        <View>
+          <Text style={styles.title}>Buddy Finder</Text>
+          <Text style={styles.subtitle}>{filteredBuddies.length} nearby</Text>
+        </View>
+        <Pressable
+          style={({ pressed }) => [
+            styles.mapToggle,
+            pressed && styles.mapTogglePressed
+          ]}
+          onPress={() => setShowMap(!showMap)}
+        >
+          <Map size={24} color={showMap ? colors.primary : colors.text.secondary} />
+        </Pressable>
       </View>
 
       <View style={styles.searchSection}>
@@ -95,6 +108,33 @@ export default function BuddyScreen() {
           </Pressable>
         </View>
       </View>
+
+      {showMap && filteredBuddies.length > 0 && (
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: filteredBuddies[0].location.gridLat,
+              longitude: filteredBuddies[0].location.gridLon,
+              latitudeDelta: 0.5,
+              longitudeDelta: 0.5,
+            }}
+          >
+            {filteredBuddies.map(buddy => (
+              <Marker
+                key={buddy.id}
+                coordinate={{
+                  latitude: buddy.location.gridLat,
+                  longitude: buddy.location.gridLon,
+                }}
+                title={buddy.displayName}
+                description={`${buddy.certificationLevel} • ${buddy.experienceDives} dives`}
+                pinColor={buddy.isInstructor ? colors.secondary : colors.primary}
+              />
+            ))}
+          </MapView>
+        </View>
+      )}
 
       <ScrollView style={styles.content}>
         {filterInstructors && instructors.length > 0 && (
@@ -201,6 +241,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 20,
     paddingTop: 60,
     backgroundColor: colors.surface,
@@ -216,6 +259,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text.secondary,
     marginTop: 4,
+  },
+  mapToggle: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: colors.background,
+  },
+  mapTogglePressed: {
+    opacity: 0.7,
+  },
+  mapContainer: {
+    height: 250,
+    backgroundColor: colors.surface,
+  },
+  map: {
+    flex: 1,
   },
   searchSection: {
     padding: 16,

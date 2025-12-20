@@ -76,7 +76,7 @@ export default function NewPlanScreen() {
         gases,
       });
 
-      router.back();
+      router.replace('/(tabs)/plans');
     } catch (error) {
       Alert.alert('Error', 'Failed to create plan');
       console.error(error);
