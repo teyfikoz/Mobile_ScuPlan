@@ -514,11 +514,11 @@ export default function WelcomeScreen() {
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {currentStep === 0 && renderWelcomeStep()}
       {currentStep === 1 && renderConsentStep()}
       {currentStep === 2 && renderSignInStep()}
-    </View>
+    </ScrollView>
   );
 }
 
