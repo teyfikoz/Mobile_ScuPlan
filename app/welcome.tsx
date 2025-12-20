@@ -4,7 +4,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   Alert,
   TextInput,
 } from 'react-native';
@@ -245,11 +244,9 @@ export default function WelcomeScreen() {
 
   const renderWelcomeStep = () => (
     <View style={styles.stepContainer}>
-      <Image
-        source={require('../assets/images/icon.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <View style={styles.logoPlaceholder}>
+        <Shield size={64} color={colors.primary} />
+      </View>
       <Text style={styles.title}>Welcome to ScuPlan</Text>
       <Text style={styles.subtitle}>
         Your complete dive planning and buddy finding companion
@@ -295,6 +292,13 @@ export default function WelcomeScreen() {
         variant="primary"
         size="large"
       />
+
+      <TouchableOpacity
+        onPress={() => router.replace('/(tabs)')}
+        style={styles.skipButton}
+      >
+        <Text style={styles.skipButtonText}>Skip (Test Mode)</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -536,11 +540,15 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: spacing.xxl,
   },
-  logo: {
+  logoPlaceholder: {
     width: 120,
     height: 120,
     alignSelf: 'center',
     marginBottom: spacing.xl,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: 60,
   },
   title: {
     ...typography.h1,
@@ -717,5 +725,15 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: colors.text.secondary,
     fontWeight: '600',
+  },
+  skipButton: {
+    marginTop: spacing.xl,
+    padding: spacing.md,
+    alignItems: 'center',
+  },
+  skipButtonText: {
+    ...typography.bodySmall,
+    color: colors.text.secondary,
+    textDecorationLine: 'underline',
   },
 });
