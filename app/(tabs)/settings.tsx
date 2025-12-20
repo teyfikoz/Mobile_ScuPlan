@@ -91,7 +91,7 @@ export default function SettingsScreen() {
           onPress: async () => {
             try {
               await signOut();
-              router.replace('/welcome');
+              // Auth middleware in app/_layout.tsx will handle redirect to /welcome
             } catch (error) {
               Alert.alert('Error', 'Failed to sign out');
             }

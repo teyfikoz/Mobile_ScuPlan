@@ -293,12 +293,7 @@ export default function WelcomeScreen() {
         size="large"
       />
 
-      <TouchableOpacity
-        onPress={() => router.replace('/(tabs)')}
-        style={styles.skipButton}
-      >
-        <Text style={styles.skipButtonText}>Skip (Test Mode)</Text>
-      </TouchableOpacity>
+      {/* Test mode disabled - authentication required */}
     </View>
   );
 
