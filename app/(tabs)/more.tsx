@@ -144,11 +144,76 @@ export default function MoreScreen() {
 
   if (!profile) {
     return (
-      <View style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Failed to load profile</Text>
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Settings & More</Text>
         </View>
-      </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Welcome to ScuPlan</Text>
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutText}>
+              To access your profile and personalized features, you'll need to sign in or create an account.
+            </Text>
+          </View>
+
+          <Button
+            title="Sign In"
+            onPress={() => router.push('/welcome')}
+            variant="primary"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>About ScuPlan</Text>
+
+          <SafetyDisclaimer variant="card" />
+
+          <View style={styles.aboutCard}>
+            <Text style={styles.aboutText}>
+              ScuPlan Mobile is a dive planning and tracking companion app designed
+              for recreational and technical scuba divers.
+            </Text>
+          </View>
+
+          <View style={styles.aboutCard}>
+            <Text style={styles.infoLabel}>Version</Text>
+            <Text style={styles.infoValue}>1.0.0 (MVP)</Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => Linking.openURL('mailto:support@scuplan.app')}
+          >
+            <View style={styles.settingLeft}>
+              <HelpCircle size={20} color={colors.text.secondary} />
+              <Text style={styles.settingText}>Contact Support</Text>
+            </View>
+            <ChevronRight size={20} color={colors.text.secondary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => Linking.openURL('https://scuplan.app/privacy')}
+          >
+            <Text style={styles.linkButtonText}>Privacy Policy</Text>
+            <ChevronRight size={16} color={colors.primary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.linkButton}
+            onPress={() => Linking.openURL('https://scuplan.app/terms')}
+          >
+            <Text style={styles.linkButtonText}>Terms of Service</Text>
+            <ChevronRight size={16} color={colors.primary} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.appInfo}>
+          <Text style={styles.appInfoText}>ScuPlan v1.0.0</Text>
+          <Text style={styles.appInfoText}>Made for divers</Text>
+        </View>
+      </ScrollView>
     );
   }
 
