@@ -96,3 +96,8 @@ export const shadows = {
     elevation: 8,
   },
 };
+
+export const layout = {
+  tabBarHeight: 65,
+  tabBarSafeBottom: 85,
+};

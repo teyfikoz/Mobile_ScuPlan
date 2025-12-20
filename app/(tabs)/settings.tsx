@@ -144,11 +144,68 @@ export default function SettingsScreen() {
 
   if (!profile) {
     return (
-      <View style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Loading settings...</Text>
+      <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Settings</Text>
         </View>
-      </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Welcome to ScuPlan</Text>
+          <View style={styles.infoCard}>
+            <Text style={styles.aboutText}>
+              To access settings and personalize your experience, you'll need to sign in or create an account.
+            </Text>
+          </View>
+
+          <Button
+            title="Sign In"
+            onPress={() => router.push('/welcome')}
+            variant="primary"
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>App Information</Text>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => Linking.openURL('https://scuplan.app/privacy')}
+          >
+            <View style={styles.settingLeft}>
+              <Shield size={20} color={colors.text.secondary} />
+              <Text style={styles.settingText}>Privacy Policy</Text>
+            </View>
+            <ChevronRight size={20} color={colors.text.secondary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => Linking.openURL('https://scuplan.app/terms')}
+          >
+            <View style={styles.settingLeft}>
+              <Shield size={20} color={colors.text.secondary} />
+              <Text style={styles.settingText}>Terms of Service</Text>
+            </View>
+            <ChevronRight size={20} color={colors.text.secondary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingRow}
+            onPress={() => Linking.openURL('mailto:support@scuplan.app')}
+          >
+            <View style={styles.settingLeft}>
+              <HelpCircle size={20} color={colors.text.secondary} />
+              <Text style={styles.settingText}>Contact Support</Text>
+            </View>
+            <ChevronRight size={20} color={colors.text.secondary} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.appInfo}>
+          <Text style={styles.appInfoText}>ScuPlan v1.0.0</Text>
+          <Text style={styles.appInfoText}>Made for divers</Text>
+        </View>
+      </ScrollView>
     );
   }
 
@@ -367,7 +424,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    paddingBottom: spacing.xxl,
+    paddingBottom: 100,
   },
   header: {
     padding: spacing.lg,
@@ -493,6 +550,11 @@ const styles = StyleSheet.create({
   appInfoText: {
     ...typography.caption,
     color: colors.text.secondary,
+  },
+  aboutText: {
+    ...typography.body,
+    color: colors.text.secondary,
+    lineHeight: 24,
   },
   loadingContainer: {
     flex: 1,
