@@ -286,14 +286,12 @@ export default function WelcomeScreen() {
         </View>
       </View>
 
-      <Button
-        title="Get Started"
+      <TouchableOpacity
+        style={styles.testButton}
         onPress={() => setCurrentStep(1)}
-        variant="primary"
-        size="large"
-      />
-
-      {/* Test mode disabled - authentication required */}
+      >
+        <Text style={styles.testButtonText}>Get Started</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -730,5 +728,17 @@ const styles = StyleSheet.create({
     ...typography.bodySmall,
     color: colors.text.secondary,
     textDecorationLine: 'underline',
+  },
+  testButton: {
+    backgroundColor: colors.primary,
+    padding: spacing.lg,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  testButtonText: {
+    color: colors.white,
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
