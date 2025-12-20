@@ -2,12 +2,11 @@ import { View, Text, StyleSheet, ScrollView, Pressable, ActivityIndicator, TextI
 import { colors } from '../../constants/theme';
 import { Users, GraduationCap, MapPin, Award, Search, Map } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
-import { getNearbyBuddies } from '../../services/nearbyBuddies';
-import { BuddyProfile } from '../../packages/core/types';
+import { getNearbyBuddies, NearbyBuddy } from '../../services/nearbyBuddies';
 import MapView, { Marker } from '../../components/MapView';
 
 export default function BuddyScreen() {
-  const [buddies, setBuddies] = useState<BuddyProfile[]>([]);
+  const [buddies, setBuddies] = useState<NearbyBuddy[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterInstructors, setFilterInstructors] = useState(false);
@@ -19,7 +18,7 @@ export default function BuddyScreen() {
 
   const loadBuddies = async () => {
     try {
-      const fetchedBuddies = await getNearbyBuddies({ radiusKm: 50 });
+      const fetchedBuddies = await getNearbyBuddies();
       setBuddies(fetchedBuddies);
     } catch (error) {
       console.error('Failed to load buddies:', error);
@@ -29,14 +28,21 @@ export default function BuddyScreen() {
   };
 
   const filteredBuddies = buddies.filter(buddy => {
-    const matchesSearch = buddy.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      buddy.location.city.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = !filterInstructors || buddy.isInstructor;
+    const displayName = buddy.displayName || buddy.fullName || 'Unknown';
+    const city = buddy.city || '';
+    const matchesSearch = displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      city.toLowerCase().includes(searchQuery.toLowerCase());
+    const isInstructor = buddy.certificationLevel === 'INSTRUCTOR' || buddy.certificationLevel === 'MASTER_INSTRUCTOR';
+    const matchesFilter = !filterInstructors || isInstructor;
     return matchesSearch && matchesFilter;
   });
 
-  const instructors = filteredBuddies.filter(b => b.isInstructor);
-  const divers = filteredBuddies.filter(b => !b.isInstructor);
+  const instructors = filteredBuddies.filter(b =>
+    b.certificationLevel === 'INSTRUCTOR' || b.certificationLevel === 'MASTER_INSTRUCTOR'
+  );
+  const divers = filteredBuddies.filter(b =>
+    b.certificationLevel !== 'INSTRUCTOR' && b.certificationLevel !== 'MASTER_INSTRUCTOR'
+  );
 
   if (loading) {
     return (
@@ -109,29 +115,32 @@ export default function BuddyScreen() {
         </View>
       </View>
 
-      {showMap && filteredBuddies.length > 0 && (
+      {showMap && filteredBuddies.length > 0 && filteredBuddies[0].latitude && filteredBuddies[0].longitude && (
         <View style={styles.mapContainer}>
           <MapView
             style={styles.map}
             initialRegion={{
-              latitude: filteredBuddies[0].location.gridLat,
-              longitude: filteredBuddies[0].location.gridLon,
+              latitude: filteredBuddies[0].latitude,
+              longitude: filteredBuddies[0].longitude,
               latitudeDelta: 0.5,
               longitudeDelta: 0.5,
             }}
           >
-            {filteredBuddies.map(buddy => (
-              <Marker
-                key={buddy.id}
-                coordinate={{
-                  latitude: buddy.location.gridLat,
-                  longitude: buddy.location.gridLon,
-                }}
-                title={buddy.displayName}
-                description={`${buddy.certificationLevel} • ${buddy.experienceDives} dives`}
-                pinColor={buddy.isInstructor ? colors.secondary : colors.primary}
-              />
-            ))}
+            {filteredBuddies.filter(b => b.latitude && b.longitude).map(buddy => {
+              const isInstructor = buddy.certificationLevel === 'INSTRUCTOR' || buddy.certificationLevel === 'MASTER_INSTRUCTOR';
+              return (
+                <Marker
+                  key={buddy.id}
+                  coordinate={{
+                    latitude: buddy.latitude!,
+                    longitude: buddy.longitude!,
+                  }}
+                  title={buddy.displayName || buddy.fullName || 'Unknown'}
+                  description={`${buddy.certificationLevel || 'N/A'} • ${buddy.experienceDives} dives`}
+                  pinColor={isInstructor ? colors.secondary : colors.primary}
+                />
+              );
+            })}
           </MapView>
         </View>
       )}
@@ -182,7 +191,11 @@ export default function BuddyScreen() {
   );
 }
 
-function BuddyCard({ buddy }: { buddy: BuddyProfile }) {
+function BuddyCard({ buddy }: { buddy: NearbyBuddy }) {
+  const isInstructor = buddy.certificationLevel === 'INSTRUCTOR' || buddy.certificationLevel === 'MASTER_INSTRUCTOR';
+  const displayName = buddy.displayName || buddy.fullName || 'Unknown';
+  const location = [buddy.city, buddy.country].filter(Boolean).join(', ') || 'Location not specified';
+
   return (
     <Pressable
       style={({ pressed }) => [
@@ -192,27 +205,28 @@ function BuddyCard({ buddy }: { buddy: BuddyProfile }) {
     >
       <View style={styles.cardHeader}>
         <View style={styles.cardHeaderLeft}>
-          <Text style={styles.cardName}>{buddy.displayName}</Text>
-          {buddy.isInstructor && (
+          <Text style={styles.cardName}>{displayName}</Text>
+          {isInstructor && (
             <View style={styles.badge}>
               <GraduationCap size={12} color="#FFFFFF" />
               <Text style={styles.badgeText}>Instructor</Text>
             </View>
           )}
         </View>
+        {buddy.distanceKm && (
+          <Text style={styles.distanceText}>{buddy.distanceKm} km</Text>
+        )}
       </View>
 
       <View style={styles.cardDetail}>
         <MapPin size={14} color={colors.text.secondary} />
-        <Text style={styles.cardDetailText}>
-          {buddy.location.city}, {buddy.location.country}
-        </Text>
+        <Text style={styles.cardDetailText}>{location}</Text>
       </View>
 
       <View style={styles.cardDetail}>
         <Award size={14} color={colors.text.secondary} />
         <Text style={styles.cardDetailText}>
-          {buddy.certificationLevel} • {buddy.experienceDives} dives
+          {buddy.certificationLevel || 'N/A'} • {buddy.experienceDives} dives
         </Text>
       </View>
 
@@ -363,6 +377,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: colors.text.primary,
+  },
+  distanceText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.primary,
   },
   badge: {
     flexDirection: 'row',

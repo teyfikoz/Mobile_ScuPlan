@@ -70,7 +70,7 @@ export default function HomeScreen() {
           <Text style={styles.infoText}>
             Plan your dives, find dive buddies, connect with instructors, and keep track of your diving history.
           </Text>
-          <Text style={styles.infoText} style={{ marginTop: 12 }}>
+          <Text style={[styles.infoText, { marginTop: 12 }]}>
             • Create detailed dive plans with gas mixes{'\n'}
             • Find nearby dive buddies and instructors{'\n'}
             • Log and track all your dives{'\n'}

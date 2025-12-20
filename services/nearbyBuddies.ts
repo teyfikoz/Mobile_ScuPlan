@@ -13,6 +13,8 @@ export interface NearbyBuddyFilters {
 export interface NearbyBuddy extends UserProfile {
   distanceKm?: number;
   lastSeen?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 // Update user's current location for nearby discovery
@@ -158,6 +160,8 @@ export async function findNearbyBuddies(
         lastLoginAt: row.last_login_at ? new Date(row.last_login_at).getTime() : undefined,
         distanceKm: Math.round(distance * 10) / 10,
         lastSeen: new Date(userLoc.updated_at).getTime(),
+        latitude: userLoc.latitude,
+        longitude: userLoc.longitude,
       };
 
       buddiesWithDistance.push(buddy);
@@ -255,6 +259,36 @@ function calculateDistance(
 
 function toRad(degrees: number): number {
   return degrees * (Math.PI / 180);
+}
+
+// Simplified wrapper for getting nearby buddies (for UI components)
+export async function getNearbyBuddies(): Promise<NearbyBuddy[]> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return [];
+    }
+
+    const { data: locationData } = await supabase
+      .from('user_locations')
+      .select('latitude, longitude')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!locationData || !locationData.latitude || !locationData.longitude) {
+      return [];
+    }
+
+    return await findNearbyBuddies(
+      user.id,
+      locationData.latitude,
+      locationData.longitude,
+      { maxDistanceKm: 50 }
+    );
+  } catch (error) {
+    console.error('Failed to get nearby buddies:', error);
+    return [];
+  }
 }
 
 // Get statistics about nearby divers

@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     borderRadius: 12,
     minWidth: 200,
-    cursor: Platform.OS === 'web' ? 'pointer' : 'default',
   },
   buttonPressed: {
     opacity: 0.8,
