@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: spacing.md,
+    paddingBottom: 100,
   },
   sessionCard: {
     backgroundColor: colors.surface,
