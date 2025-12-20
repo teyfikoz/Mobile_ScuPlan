@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors } from '../constants/theme';
 
@@ -7,7 +7,7 @@ export default function WelcomeScreen() {
 
   const handlePress = () => {
     console.log('Button pressed!');
-    router.replace('/(tabs)');
+    router.push('/(tabs)');
   };
 
   return (
@@ -15,9 +15,15 @@ export default function WelcomeScreen() {
       <Text style={styles.title}>Welcome to ScuPlan</Text>
       <Text style={styles.subtitle}>Dive planning made simple</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handlePress}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.button,
+          pressed && styles.buttonPressed
+        ]}
+        onPress={handlePress}
+      >
         <Text style={styles.buttonText}>Get Started</Text>
-      </TouchableOpacity>
+      </Pressable>
 
       <Text style={styles.debug}>If you can see this text, the screen is loading</Text>
     </View>
@@ -51,6 +57,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     borderRadius: 12,
     minWidth: 200,
+    cursor: Platform.OS === 'web' ? 'pointer' : 'default',
+  },
+  buttonPressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.98 }],
   },
   buttonText: {
     color: '#FFFFFF',
