@@ -4,6 +4,20 @@ import { colors } from '../../constants/theme';
 import { Platform } from 'react-native';
 
 export default function TabLayout() {
+  const tabBarHeight = Platform.select({
+    ios: 85,
+    android: 70,
+    web: 70,
+    default: 70,
+  });
+
+  const tabBarPaddingBottom = Platform.select({
+    ios: 20,
+    android: 10,
+    web: 8,
+    default: 10,
+  });
+
   return (
     <Tabs
       screenOptions={{
@@ -14,13 +28,17 @@ export default function TabLayout() {
           backgroundColor: colors.background,
           borderTopColor: colors.divider,
           borderTopWidth: 1,
-          height: 65,
-          paddingBottom: 10,
-          paddingTop: 10,
+          height: tabBarHeight,
+          paddingBottom: tabBarPaddingBottom,
+          paddingTop: 8,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
+          marginTop: 2,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 4,
         },
         tabBarHideOnKeyboard: true,
       }}
@@ -30,7 +48,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ size, color }) => (
-            <Home size={size} color={color} />
+            <Home size={22} color={color} />
           ),
         }}
       />
@@ -39,7 +57,7 @@ export default function TabLayout() {
         options={{
           title: 'Plans',
           tabBarIcon: ({ size, color }) => (
-            <FolderOpen size={size} color={color} />
+            <FolderOpen size={22} color={color} />
           ),
         }}
       />
@@ -48,7 +66,7 @@ export default function TabLayout() {
         options={{
           title: 'Buddy',
           tabBarIcon: ({ size, color }) => (
-            <Users size={size} color={color} />
+            <Users size={22} color={color} />
           ),
         }}
       />
@@ -57,7 +75,7 @@ export default function TabLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ size, color }) => (
-            <MessageCircle size={size} color={color} />
+            <MessageCircle size={22} color={color} />
           ),
         }}
       />
@@ -66,7 +84,7 @@ export default function TabLayout() {
         options={{
           title: 'Log',
           tabBarIcon: ({ size, color }) => (
-            <BookOpen size={size} color={color} />
+            <BookOpen size={22} color={color} />
           ),
         }}
       />
@@ -75,7 +93,7 @@ export default function TabLayout() {
         options={{
           title: 'More',
           tabBarIcon: ({ size, color }) => (
-            <Menu size={size} color={color} />
+            <Menu size={22} color={color} />
           ),
         }}
       />
