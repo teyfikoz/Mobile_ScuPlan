@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: spacing.md,
-    paddingBottom: 100,
+    paddingBottom: 70,
   },
   planCard: {
     backgroundColor: colors.surface,

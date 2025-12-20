@@ -603,7 +603,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 70,
   },
   header: {
     flexDirection: 'row',

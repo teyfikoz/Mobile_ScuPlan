@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: spacing.lg,
-    paddingBottom: 100,
+    paddingBottom: 70,
   },
   disclaimer: {
     marginBottom: spacing.xl,

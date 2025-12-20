@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     flexGrow: 1,
-    paddingBottom: 100,
+    paddingBottom: 70,
   },
   conversationItem: {
     flexDirection: 'row',
