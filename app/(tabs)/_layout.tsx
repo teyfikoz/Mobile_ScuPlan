@@ -7,20 +7,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
 
-  const tabBarHeight = Platform.select({
-    ios: 65 + insets.bottom,
-    android: 65,
-    web: 65,
-    default: 65,
-  });
-
-  const tabBarPaddingBottom = Platform.select({
-    ios: Math.max(insets.bottom, 10),
-    android: 8,
-    web: 8,
-    default: 8,
-  });
-
   return (
     <Tabs
       screenOptions={{
@@ -28,31 +14,35 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.text.secondary,
         tabBarStyle: {
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
           backgroundColor: colors.background,
           borderTopColor: colors.divider,
           borderTopWidth: 1,
-          height: tabBarHeight,
-          paddingBottom: tabBarPaddingBottom,
-          paddingTop: 5,
-          elevation: 0,
-          shadowOpacity: 0,
+          height: Platform.select({
+            ios: 75 + insets.bottom,
+            android: 65,
+            web: 65,
+            default: 65,
+          }),
+          paddingBottom: Platform.select({
+            ios: Math.max(insets.bottom, 8),
+            android: 8,
+            web: 8,
+            default: 8,
+          }),
+          paddingTop: 8,
+          paddingHorizontal: 4,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: '600',
-          marginTop: 0,
-          marginBottom: 2,
+          marginTop: -2,
+          paddingBottom: 2,
         },
         tabBarIconStyle: {
-          marginTop: 4,
+          marginTop: 2,
         },
         tabBarItemStyle: {
-          paddingVertical: 0,
-          height: 50,
+          paddingVertical: 4,
         },
         tabBarHideOnKeyboard: Platform.OS !== 'ios',
       }}
@@ -62,7 +52,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ size, color }) => (
-            <Home size={20} color={color} />
+            <Home size={18} color={color} />
           ),
         }}
       />
@@ -71,7 +61,7 @@ export default function TabLayout() {
         options={{
           title: 'Plans',
           tabBarIcon: ({ size, color }) => (
-            <FolderOpen size={20} color={color} />
+            <FolderOpen size={18} color={color} />
           ),
         }}
       />
@@ -80,7 +70,7 @@ export default function TabLayout() {
         options={{
           title: 'Buddy',
           tabBarIcon: ({ size, color }) => (
-            <Users size={20} color={color} />
+            <Users size={18} color={color} />
           ),
         }}
       />
@@ -89,7 +79,7 @@ export default function TabLayout() {
         options={{
           title: 'Messages',
           tabBarIcon: ({ size, color }) => (
-            <MessageCircle size={20} color={color} />
+            <MessageCircle size={18} color={color} />
           ),
         }}
       />
@@ -98,7 +88,7 @@ export default function TabLayout() {
         options={{
           title: 'Log',
           tabBarIcon: ({ size, color }) => (
-            <BookOpen size={20} color={color} />
+            <BookOpen size={18} color={color} />
           ),
         }}
       />
@@ -107,7 +97,7 @@ export default function TabLayout() {
         options={{
           title: 'More',
           tabBarIcon: ({ size, color }) => (
-            <Menu size={20} color={color} />
+            <Menu size={18} color={color} />
           ),
         }}
       />
