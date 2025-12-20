@@ -34,8 +34,8 @@ export default function RootLayout() {
     const inAuthGroup = segments[0] === '(tabs)';
 
     if (!session && inAuthGroup) {
-      // Redirect to welcome if not authenticated
-      router.replace('/welcome');
+      // Allow access to tabs for testing
+      // router.replace('/welcome');
     } else if (session && !inAuthGroup && segments[0] === 'welcome') {
       // Redirect to tabs if authenticated and on welcome screen
       router.replace('/(tabs)');
@@ -44,9 +44,12 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="welcome" options={{ headerShown: false }} />
+      <Stack
+        screenOptions={{ headerShown: false }}
+        initialRouteName="(tabs)"
+      >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
         <Stack.Screen
           name="session"
           options={{
